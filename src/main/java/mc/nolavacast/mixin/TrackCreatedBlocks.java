@@ -1,5 +1,6 @@
 package mc.nolavacast.mixin;
 
+import it.unimi.dsi.fastutil.longs.Long2ShortLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.longs.LongArrayList;
 import it.unimi.dsi.fastutil.longs.LongList;
 import mc.nolavacast.NoLavaCast;
@@ -15,6 +16,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
+import java.util.HashMap;
+
 @Mixin(FluidBlock.class)
 public class TrackCreatedBlocks {
     @Inject(
@@ -26,23 +29,25 @@ public class TrackCreatedBlocks {
     public void trackAndCancelLavaToCobblestone(World world, BlockPos pos, BlockState state, CallbackInfoReturnable<Boolean> cir, Block block) {
         if (block == Blocks.COBBLESTONE) {
             long chunkPos = world.getChunk(pos).getPos().toLong();
-
+    
+            Long2ShortLinkedOpenHashMap chunk2CountMapAccess = NoLavaCast.chunk2CountMap;
             if (NoLavaCast.config.ignoreGenInSameSpot) {
                 // Add new key if not present
-                if (!NoLavaCast.alreadySeenBlocksPerChunk.containsKey(chunkPos)) {
-                    NoLavaCast.alreadySeenBlocksPerChunk.put(chunkPos, new LongArrayList());
+                HashMap<Long, LongArrayList> alreadySeenBlocksPerChunkAccess = NoLavaCast.alreadySeenBlocksPerChunk;
+                if (!alreadySeenBlocksPerChunkAccess.containsKey(chunkPos)) {
+                    alreadySeenBlocksPerChunkAccess.put(chunkPos, new LongArrayList());
                 }
                 
                 // Doesn't contain it, so add the pos and increment
-                if (!NoLavaCast.alreadySeenBlocksPerChunk.get(chunkPos).contains(pos.asLong())) {
-                    NoLavaCast.alreadySeenBlocksPerChunk.get(chunkPos).add(pos.asLong());
-                    NoLavaCast.chunk2CountMap.addTo(chunkPos, (short)1);
+                if (!alreadySeenBlocksPerChunkAccess.get(chunkPos).contains(pos.asLong())) {
+                    alreadySeenBlocksPerChunkAccess.get(chunkPos).add(pos.asLong());
+                    chunk2CountMapAccess.addTo(chunkPos, (short)1);
                 }
             } else {
-                NoLavaCast.chunk2CountMap.addTo(chunkPos, (short)1);
+                chunk2CountMapAccess.addTo(chunkPos, (short)1);
             }
     
-            if (NoLavaCast.chunk2CountMap.get(chunkPos) >= NoLavaCast.config.maxThreshold) {
+            if (chunk2CountMapAccess.get(chunkPos) >= NoLavaCast.config.maxThreshold) {
                 cir.setReturnValue(true);
             }
         }

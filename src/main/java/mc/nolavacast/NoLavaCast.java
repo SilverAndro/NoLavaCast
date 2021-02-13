@@ -15,7 +15,7 @@ public class NoLavaCast implements ModInitializer {
     public static final LongArraySet isLoadedChunks = new LongArraySet();
     public static final Long2ShortLinkedOpenHashMap chunk2CountMap = new Long2ShortLinkedOpenHashMap();
     public static final HashMap<Long, LongArrayList> alreadySeenBlocksPerChunk = new HashMap<>();
-    private int count = 0;
+    private int tickCount = 0;
     
     public static final NoLavaCastConfig config = MicroConfig.getOrCreate("no_lava_cast", new NoLavaCastConfig());
     
@@ -24,9 +24,9 @@ public class NoLavaCast implements ModInitializer {
         System.out.println("Lavacasting is gone!");
         
         ServerTickEvents.END_WORLD_TICK.register(world -> {
-            count++;
+            tickCount++;
             
-            if (count % 35 == 0) {
+            if (tickCount % 35 == 0) {
                 LongSet loaded = ((LoadedChunksAccessor)world.getChunkManager().threadedAnvilChunkStorage).getLoadedChunks();
                 LongIterator iter = loaded.iterator();
                 while (iter.hasNext()) {
@@ -62,10 +62,10 @@ public class NoLavaCast implements ModInitializer {
                 isLoadedChunks.clear();
             }
             
-            if (count % 3000 == 0) {
+            if (tickCount % 3000 == 0) {
                 chunk2CountMap.clear();
                 alreadySeenBlocksPerChunk.clear();
-                count = 0;
+                tickCount = 0;
             }
         });
     }
