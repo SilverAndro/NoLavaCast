@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "id": "nolavacast",
+  "version": "${version}",
+  "name": "NoLavaCast",
+  "description": "",
+  "authors": [],
+  "contact": {},
+  "license": "MPL-2.0",
+  "icon": "assets/nolavacast/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "mc.nolavacast.NoLavaCast"
+    ]
+  },
+  "mixins": [
+    "nolavacast.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": "*",
+    "minecraft": "*"
+  },
+  "custom": {
+    "cardinal-components": [
+      "nolavacast:block_count"
+    ]
+  }
+}

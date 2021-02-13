@@ -1,0 +1,13 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "mc.nolavacast.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "mixins": [
+    "LoadedChunksAccessor",
+    "TrackCreatedBlocks"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
